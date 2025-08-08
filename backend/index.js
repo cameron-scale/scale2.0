@@ -6,12 +6,25 @@ const axios = require('axios');
 
 const app = express();
 const port = process.env.PORT || 3001;
+const path = require('path');
 
 // Enable CORS for all origins. In production, restrict this to your frontend domain.
 app.use(cors());
 
 // Parse incoming JSON bodies
 app.use(express.json());
+
+/*
+ * Serve the compiled frontend.  In production we host the static
+ * assets from the `../frontend` directory.  When deployed, the
+ * express server will respond with the index.html for any unknown
+ * route so that the single page application can handle routing on
+ * the client side.  This middleware is placed before the API
+ * endpoints so that `/api/*` requests are still handled by the
+ * handlers defined below.
+ */
+const frontendDir = path.join(__dirname, '../frontend');
+app.use(express.static(frontendDir));
 
 /*
  * Dashboard Metrics Endpoint
@@ -152,9 +165,13 @@ app.get('/api/salesforce/leads', (req, res) => {
   res.json({ message: 'Salesforce leads endpoint not yet implemented' });
 });
 
-// Catch-all handler for unknown routes
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not found' });
+// Serve index.html for any other GET request (client-side routing)
+app.get('*', (req, res) => {
+  // If the request starts with /api let the previous handlers respond with 404
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+  res.sendFile(path.join(frontendDir, 'index.html'));
 });
 
 app.listen(port, () => {
