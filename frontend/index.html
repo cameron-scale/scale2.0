@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Scale 2.0</title>
   <link rel="stylesheet" href="style.css" />
+  <!-- Chart.js for the charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="theme-dark">
+  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="logo">S</div>
     <nav class="nav">
@@ -19,14 +21,18 @@
     </nav>
   </aside>
 
+  <!-- Main container -->
   <div class="shell">
+    <!-- Topbar -->
     <header class="topbar">
       <input class="search" placeholder="Search…" />
       <div class="actions">
-        <span>🔔</span><span>👤</span>
+        <span>🔔</span>
+        <span>👤</span>
       </div>
     </header>
 
+    <!-- Dashboard grid -->
     <main class="grid">
       <!-- KPI row -->
       <section class="card kpis">
@@ -52,7 +58,7 @@
         </div>
       </section>
 
-      <!-- Charts row -->
+      <!-- Charts -->
       <section class="card chart">
         <div class="card-title">Revenue Trend</div>
         <canvas id="chartRevenue"></canvas>
@@ -68,19 +74,19 @@
         <canvas id="chartChannels"></canvas>
       </section>
 
-      <!-- Emails -->
+      <!-- Recent Emails -->
       <section class="card list">
         <div class="card-title">Recent Emails</div>
         <ul id="email-list"></ul>
       </section>
 
-      <!-- Chat -->
+      <!-- Chat Assistant -->
       <section class="card chat">
         <div class="card-title">Assistant</div>
         <div id="chat-container" class="chat-scroll"></div>
         <form id="chat-form" class="chat-form">
           <input type="text" id="chat-input" placeholder="Ask about growth, unpaid bills, leads to contact…" />
-          <button>Send</button>
+          <button type="submit">Send</button>
         </form>
       </section>
     </main>
