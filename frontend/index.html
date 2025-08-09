@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Scale 2.0</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scale 2.0 Dashboard</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Chart.js for the charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="theme-dark">
@@ -14,85 +13,47 @@
     <div class="logo">S</div>
     <nav class="nav">
       <a class="nav-item active" title="Home">🏠</a>
-      <a class="nav-item" title="Emails">📧</a>
-      <a class="nav-item" title="Sales">📈</a>
-      <a class="nav-item" title="Calendar">🗓️</a>
+      <a class="nav-item" title="Team">👥</a>
+      <a class="nav-item" title="Reports">📊</a>
+      <a class="nav-item" title="Leads">📈</a>
       <a class="nav-item" title="Settings">⚙️</a>
     </nav>
   </aside>
-  
-
-  <!-- Main container -->
+  <!-- Main area -->
   <div class="shell">
-    <!-- Topbar -->
     <header class="topbar">
       <input class="search" placeholder="Search…" />
-      <div class="actions">
-        <span>🔔</span>
-        <span>👤</span>
-      </div>
+      <div class="actions"><span>🔔</span><span>👤</span></div>
     </header>
-
-    <!-- Dashboard grid -->
     <main class="grid">
-      <!-- KPI row -->
-      <section class="card kpis">
-        <div class="kpi">
-          <div class="kpi-label">Revenue (MTD)</div>
-          <div class="kpi-value" id="rev-mtd">$0</div>
-          <div class="kpi-sub" id="rev-mtd-delta">—</div>
+      <!-- Big combined chart -->
+      <section class="card big-chart">
+        <div class="card-header">
+          <h3>Revenue vs Growth</h3>
+          <div class="big-value" id="gross-revenue">$0</div>
         </div>
-        <div class="kpi">
-          <div class="kpi-label">Revenue (Last Month)</div>
-          <div class="kpi-value" id="rev-last">$0</div>
-          <div class="kpi-sub" id="rev-last-delta">—</div>
+        <canvas id="chartBig"></canvas>
+      </section>
+      <!-- Donut + mini bar chart -->
+      <section class="card donut-chart">
+        <div class="card-header">
+          <h3>Stats</h3>
+          <div class="donut-value" id="donut-value">0</div>
         </div>
-        <div class="kpi">
-          <div class="kpi-label">Total Revenue</div>
-          <div class="kpi-value" id="rev-total">$0</div>
-          <div class="kpi-sub">Since inception</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">Unpaid Bills</div>
-          <div class="kpi-value" id="unpaid-bills">$0</div>
-          <div class="kpi-sub">Due this month</div>
-        </div>
+        <canvas id="chartDonut"></canvas>
+        <canvas id="chartMiniBar"></canvas>
       </section>
-
-      <!-- Charts -->
-      <section class="card chart">
-        <div class="card-title">Revenue Trend</div>
-        <canvas id="chartRevenue"></canvas>
+      <!-- Bottom charts -->
+      <section class="card bar-chart">
+        <h3 class="card-title">Leads & Wins</h3>
+        <canvas id="chartBar1"></canvas>
       </section>
-
-      <section class="card chart">
-        <div class="card-title">Leads & Conversions</div>
-        <canvas id="chartLeads"></canvas>
-      </section>
-
-      <section class="card chart">
-        <div class="card-title">Channel Performance</div>
-        <canvas id="chartChannels"></canvas>
-      </section>
-
-      <!-- Recent Emails -->
-      <section class="card list">
-        <div class="card-title">Recent Emails</div>
-        <ul id="email-list"></ul>
-      </section>
-
-      <!-- Chat Assistant -->
-      <section class="card chat">
-        <div class="card-title">Assistant</div>
-        <div id="chat-container" class="chat-scroll"></div>
-        <form id="chat-form" class="chat-form">
-          <input type="text" id="chat-input" placeholder="Ask about growth, unpaid bills, leads to contact…" />
-          <button type="submit">Send</button>
-        </form>
+      <section class="card bar-chart">
+        <h3 class="card-title">Channel Performance</h3>
+        <canvas id="chartBar2"></canvas>
       </section>
     </main>
   </div>
-
   <script src="app.js"></script>
 </body>
 </html>
