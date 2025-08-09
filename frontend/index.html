@@ -4,53 +4,99 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Scale 2.0 Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js for the three charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
-<body class="theme-dark">
+<body>
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="logo">S</div>
     <nav class="nav">
       <a class="nav-item active" title="Home">🏠</a>
-      <a class="nav-item" title="Team">👥</a>
-      <a class="nav-item" title="Reports">📊</a>
-      <a class="nav-item" title="Leads">📈</a>
+      <a class="nav-item" title="Email">📧</a>
+      <a class="nav-item" title="Sales">📈</a>
+      <a class="nav-item" title="Calendar">🗓️</a>
       <a class="nav-item" title="Settings">⚙️</a>
     </nav>
   </aside>
-  <!-- Main area -->
+
+  <!-- Page content -->
   <div class="shell">
     <header class="topbar">
       <input class="search" placeholder="Search…" />
       <div class="actions"><span>🔔</span><span>👤</span></div>
     </header>
+
     <main class="grid">
-      <!-- Big combined chart -->
-      <section class="card big-chart">
-        <div class="card-header">
-          <h3>Revenue vs Growth</h3>
-          <div class="big-value" id="gross-revenue">$0</div>
+      <!-- KPI row -->
+      <section class="card kpis">
+        <div class="kpi">
+          <div class="kpi-label">Revenue (MTD)</div>
+          <div class="kpi-value" id="revenueThisMonth">$0</div>
+          <div class="kpi-sub">vs last month</div>
         </div>
-        <canvas id="chartBig"></canvas>
-      </section>
-      <!-- Donut + mini bar chart -->
-      <section class="card donut-chart">
-        <div class="card-header">
-          <h3>Stats</h3>
-          <div class="donut-value" id="donut-value">0</div>
+        <div class="kpi">
+          <div class="kpi-label">Revenue (Last Month)</div>
+          <div class="kpi-value" id="revenueLastMonth">$0</div>
+          <div class="kpi-sub">vs prior</div>
         </div>
-        <canvas id="chartDonut"></canvas>
-        <canvas id="chartMiniBar"></canvas>
+        <div class="kpi">
+          <div class="kpi-label">Total Revenue</div>
+          <div class="kpi-value" id="totalRevenue">$0</div>
+          <div class="kpi-sub">since inception</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Unpaid Bills</div>
+          <div class="kpi-value" id="unpaidBills">0</div>
+          <div class="kpi-sub">due this month</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Total Clients</div>
+          <div class="kpi-value" id="totalClients">0</div>
+          <div class="kpi-sub"></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Active Leads</div>
+          <div class="kpi-value" id="activeLeads">0</div>
+          <div class="kpi-sub"></div>
+        </div>
       </section>
-      <!-- Bottom charts -->
-      <section class="card bar-chart">
-        <h3 class="card-title">Leads & Wins</h3>
-        <canvas id="chartBar1"></canvas>
+
+      <!-- Charts -->
+      <section class="card chart">
+        <div class="card-title">Revenue Trend</div>
+        <canvas id="chartRevenue"></canvas>
       </section>
-      <section class="card bar-chart">
-        <h3 class="card-title">Channel Performance</h3>
-        <canvas id="chartBar2"></canvas>
+      <section class="card chart">
+        <div class="card-title">Leads & Conversions</div>
+        <canvas id="chartLeads"></canvas>
+      </section>
+      <section class="card chart">
+        <div class="card-title">Channel Performance</div>
+        <canvas id="chartChannels"></canvas>
+      </section>
+
+      <!-- Recent Emails -->
+      <section class="card list">
+        <div class="card-title">Recent Emails</div>
+        <ul id="email-list"></ul>
+      </section>
+
+      <!-- Chat Assistant -->
+      <section class="card chat">
+        <div class="card-title">Chat Assistant</div>
+        <div id="chat-container" class="chat-scroll"></div>
+        <form id="chat-form" class="chat-form">
+          <input type="text" id="chat-input" placeholder="Ask a question…">
+          <button type="submit">Send</button>
+        </form>
+      </section>
+
+      <!-- Integrated Apps -->
+      <section class="card apps">
+        <div class="card-title">Integrated Apps</div>
+        <div id="apps-grid" class="app-grid"></div>
       </section>
     </main>
   </div>
