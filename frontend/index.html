@@ -86,7 +86,24 @@
         <div class="card-title">Integrated Apps</div>
         <div id="apps-grid" class="app-grid"></div>
       </section>
+
+      <!-- Integration Details -->
+      <section id="integration-details" class="card" style="display:none;">
+        <div class="card-title" id="integration-title"></div>
+        <div id="integration-content"></div>
+        <button id="back-to-dashboard" class="back-button">Back to Dashboard</button>
+      </section>
+
     </main>
+  </div>
+
+  <!-- Account Linking Modal -->
+  <div id="link-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h2>Connect your integrations</h2>
+      <ul id="link-list"></ul>
+      <button id="close-modal" class="close-button">Close</button>
+    </div>
   </div>
 
   <script src="app.js"></script>

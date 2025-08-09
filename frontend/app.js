@@ -1,9 +1,233 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize connection statuses and populate UI
+  await initializeConnections();
+  populateApps();
   refreshMetrics();
   loadEmails();
-  populateApps();
   wireChat();
   renderCharts();
+  buildLinkList();
+  showLinkModal();
+});
+
+// Service definitions and connection state
+const services = [
+  { name: 'QuickBooks', slug: 'quickbooks' },
+  { name: 'Outlook', slug: 'outlook' },
+  { name: 'GoDaddy', slug: 'godaddy' },
+  { name: 'Salesforce', slug: 'salesforce' },
+  { name: 'Webflow', slug: 'webflow' },
+  { name: 'SEOptimer', slug: 'seoptimer' },
+  { name: 'AccessiBe', slug: 'accessibe' },
+  { name: 'Converge Pay', slug: 'convergepay' },
+  { name: 'Talech', slug: 'talech' },
+  { name: 'Zapier', slug: 'zapier' },
+  { name: 'Adobe Acrobat', slug: 'acrobat' },
+  { name: 'Google Analytics', slug: 'googleanalytics' },
+  { name: 'Google Calendar', slug: 'googlecalendar' },
+  { name: 'ChatGPT', slug: 'assistant' },
+  { name: 'Zoom', slug: 'zoom' },
+  { name: 'Calendly', slug: 'calendly' }
+];
+const connections = {};
+
+// Fetch status for each service
+async function initializeConnections() {
+  await Promise.all(services.map(async svc => {
+    try {
+      const res = await fetch(`/api/${svc.slug}/status`);
+      const data = await res.json();
+      connections[svc.slug] = !!data.connected;
+    } catch (err) {
+      connections[svc.slug] = false;
+    }
+  }));
+}
+
+/* Build link list in modal */
+function buildLinkList() {
+  const list = document.getElementById('link-list');
+  list.innerHTML = '';
+  services.forEach(svc => {
+    const li = document.createElement('li');
+    const span = document.createElement('span');
+    span.textContent = svc.name;
+    const btn = document.createElement('button');
+    btn.className = 'connect-btn';
+    btn.dataset.slug = svc.slug;
+    updateConnectButton(btn);
+    btn.addEventListener('click', async () => {
+      const slug = btn.dataset.slug;
+      if (!connections[slug]) {
+        await connectService(slug);
+      } else {
+        await disconnectService(slug);
+      }
+      updateConnectButton(btn);
+      updateAppCards();
+    });
+    li.appendChild(span);
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+}
+
+function updateConnectButton(btn) {
+  const slug = btn.dataset.slug;
+  if (connections[slug]) {
+    btn.textContent = 'Connected';
+    btn.classList.add('connected');
+  } else {
+    btn.textContent = 'Connect';
+    btn.classList.remove('connected');
+  }
+}
+
+async function connectService(slug) {
+  try {
+    const res = await fetch(`/api/${slug}/connect`, { method: 'POST' });
+    const data = await res.json();
+    connections[slug] = !!data.connected;
+  } catch (err) {
+    console.error('Connect error', err);
+  }
+}
+
+async function disconnectService(slug) {
+  try {
+    const res = await fetch(`/api/${slug}/disconnect`, { method: 'POST' });
+    const data = await res.json();
+    connections[slug] = !!data.connected;
+  } catch (err) {
+    console.error('Disconnect error', err);
+  }
+}
+
+/* Show and hide modal */
+function showLinkModal() {
+  const modal = document.getElementById('link-modal');
+  modal.style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('link-modal').style.display = 'none';
+}
+
+// Close modal when close button clicked
+ document.addEventListener('click', function(event) {
+  if (event.target && event.target.id === 'close-modal') {
+    closeModal();
+  }
+});
+
+/* Populate Integrated Apps grid */
+function populateApps() {
+  const grid = document.getElementById('apps-grid');
+  grid.innerHTML = '';
+  services.forEach(svc => {
+    const card = document.createElement('div');
+    card.className = 'app-card';
+    card.textContent = svc.name;
+    card.dataset.slug = svc.slug;
+    if (connections[svc.slug]) {
+      card.classList.add('connected');
+    }
+    card.addEventListener('click', async () => {
+      if (!connections[svc.slug]) {
+        // connect service and update UI
+        await connectService(svc.slug);
+        const btn = document.querySelector(`.connect-btn[data-slug="${svc.slug}"]`);
+        if (btn) updateConnectButton(btn);
+        card.classList.add('connected');
+      } else {
+        openIntegration(svc.slug);
+      }
+    });
+    grid.appendChild(card);
+  });
+}
+
+/* Update App card statuses after connection changes */
+function updateAppCards() {
+  const cards = document.querySelectorAll('.app-card');
+  cards.forEach(card => {
+    const slug = card.dataset.slug;
+    if (connections[slug]) {
+      card.classList.add('connected');
+    } else {
+      card.classList.remove('connected');
+    }
+  });
+}
+
+/* Open integration details */
+function openIntegration(slug) {
+  // Hide dashboard cards except integration details
+  document.querySelectorAll('main .card').forEach(el => {
+    if (el.id !== 'integration-details') {
+      el.style.display = 'none';
+    }
+  });
+  const details = document.getElementById('integration-details');
+  const title = document.getElementById('integration-title');
+  const content = document.getElementById('integration-content');
+  const svc = services.find(s => s.slug === slug);
+  title.textContent = svc ? svc.name : slug;
+  content.innerHTML = '<p>Loading...</p>';
+  details.style.display = 'block';
+  // Map of endpoints to call for each integration
+  const endpointsMap = {
+    quickbooks: ['accounts','customers'],
+    outlook: ['messages'],
+    godaddy: ['products','subscriptions'],
+    salesforce: ['leads'],
+    webflow: [],
+    seoptimer: [],
+    accessibe: [],
+    convergepay: ['transactions'],
+    talech: ['sales','inventory'],
+    zapier: ['triggers'],
+    acrobat: ['documents'],
+    googleanalytics: ['realtime','reports'],
+    googlecalendar: ['events'],
+    zoom: ['meetings'],
+    calendly: ['events'],
+    assistant: [],
+  };
+  const endpoints = endpointsMap[slug] || [];
+  if (endpoints.length === 0) {
+    content.innerHTML = '<p>No data available for this integration.</p>';
+  } else {
+    Promise.all(endpoints.map(ep => fetch(`/api/${slug}/${ep}`).then(r => {
+      if (!r.ok) throw new Error('request failed');
+      return r.json();
+    }).then(data => ({ ep, data })).catch(() => ({ ep, data: { error: 'Failed to load' } })))).then(results => {
+      content.innerHTML = '';
+      results.forEach(({ ep, data }) => {
+        const section = document.createElement('div');
+        const h3 = document.createElement('h3');
+        h3.textContent = ep.charAt(0).toUpperCase() + ep.slice(1);
+        section.appendChild(h3);
+        const pre = document.createElement('pre');
+        pre.textContent = JSON.stringify(data, null, 2);
+        section.appendChild(pre);
+        content.appendChild(section);
+      });
+    });
+  }
+}
+
+/* Back to dashboard */
+document.addEventListener('click', function(event) {
+  if (event.target && event.target.id === 'back-to-dashboard') {
+    document.querySelectorAll('main .card').forEach(el => {
+      if (el.id === 'integration-details') {
+        el.style.display = 'none';
+      } else {
+        el.style.display = '';
+      }
+    });
+  }
 });
 
 /* Fetch metrics and update KPI cards */
@@ -40,25 +264,6 @@ async function loadEmails() {
   }
 }
 
-/* Populate Integrated Apps */
-function populateApps() {
-  const apps = [
-    'QuickBooks','Outlook','GoDaddy','Salesforce','Webflow','SEOptimer','AccessiBe',
-    'Converge Pay','Talech','Zapier','Adobe Acrobat','Google Analytics',
-    'Google Calendar','ChatGPT','Zoom','Calendly'
-  ];
-  const grid = document.getElementById('apps-grid');
-  apps.forEach(name => {
-    const card = document.createElement('div');
-    card.className = 'app-card';
-    card.textContent = name;
-    card.addEventListener('click', () => {
-      alert(`${name} module not yet implemented`);
-    });
-    grid.appendChild(card);
-  });
-}
-
 /* Chat assistant */
 function wireChat() {
   const form = document.getElementById('chat-form');
@@ -84,6 +289,7 @@ function wireChat() {
     }
   });
 }
+
 function appendChat(role, text) {
   const container = document.getElementById('chat-container');
   const div = document.createElement('div');
@@ -107,7 +313,7 @@ function renderCharts() {
           backgroundColor:'rgba(154,230,180,0.2)', borderColor:'rgba(154,230,180,1)', tension:.3 }
       ]
     },
-    options:{ plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.08)'}}}}
+    options:{ plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}}, y:{grid:{color:'rgba(255,255,255,0.08)'}}}}
   });
   // Leads & Conversions
   new Chart(document.getElementById('chartLeads'), {
@@ -115,21 +321,20 @@ function renderCharts() {
     data:{
       labels: monthLabels(8),
       datasets:[
-        { label:'Leads', data:fakeSeries(8,20,60), backgroundColor:'rgba(103,210,255,0.6)' },
-        { label:'Wins', data:fakeSeries(8,5,20), backgroundColor:'rgba(154,230,180,0.6)' }
+        { label:'Leads', data: fakeSeries(8,20,60), backgroundColor:'rgba(103,210,255,0.6)' },
+        { label:'Wins', data: fakeSeries(8,5,20), backgroundColor:'rgba(154,230,180,0.6)' }
       ]
     },
-    options:{ plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.08)'}}}}
+    options:{ plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}}, y:{grid:{color:'rgba(255,255,255,0.08)'}}}}
   });
   // Channel Performance
   new Chart(document.getElementById('chartChannels'), {
     type:'bar',
     data:{
       labels:['Organic','Paid','Email','Referral','Direct'],
-      datasets:[{ data:fakeSeries(5, 50, 200),
-        backgroundColor:['#67d2ff','#9ae6b4','#ffd666','#bdb2ff','#ffa4a4'] }]
+      datasets:[{ data: fakeSeries(5, 50, 200), backgroundColor:['#67d2ff','#9ae6b4','#ffd666','#bdb2ff','#ffa4a4'] }]
     },
-    options:{ plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.08)'}}}}
+    options:{ plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}}, y:{grid:{color:'rgba(255,255,255,0.08)'}}}}
   });
 }
 
@@ -142,7 +347,4 @@ function monthLabels(n){
   return arr;
 }
 function fakeSeries(n,min,max){ return Array.from({length:n},()=> Math.floor(min + Math.random()*(max-min))); }
-function escapeHTML(s){
-  return s.replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
-}
-
+function escapeHTML(s){ return s.replace(/[&<>"]|"|'/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch])); }
