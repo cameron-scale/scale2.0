@@ -94,6 +94,7 @@ app.get('/api/emails', async (req, res) => {
         from: 'billing@acme.example',
         receivedDate: '2025-08-07T15:45:00Z',
         importance: 0.95,
+        
       },
       {
         id: '2',
@@ -175,6 +176,7 @@ app.post('/api/chat', async (req, res) => {
  * return stubbed data. Replace them with calls into service
  * modules that wrap the third‑party APIs.
  */
+
 
 app.get('/api/quickbooks/accounts', (req, res) => {
   res.json({ message: 'QuickBooks accounts endpoint not yet implemented' });
