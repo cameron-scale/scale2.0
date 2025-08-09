@@ -16,6 +16,7 @@ async function refreshMetrics(){
     setText('rev-last', money(METRICS.revenueLastMonth));
     setText('rev-total', money(METRICS.totalRevenue));
     setText('unpaid-bills', money(METRICS.unpaidBills || 0));
+    
 
     // simple deltas (placeholder calc)
     const delta = pctDelta(METRICS.revenueThisMonth, METRICS.revenueLastMonth);
