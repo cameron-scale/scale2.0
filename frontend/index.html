@@ -1,38 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scale 2.0 Dashboard</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <h1>Scale 2.0</h1>
-    </header>
-    <main>
-      <section id="metrics" class="panel">
-        <h2>Business Metrics</h2>
-        <div id="metrics-container" class="card-grid"></div>
-      </section>
-      <section id="emails" class="panel">
-        <h2>Recent Emails</h2>
-        <ul id="email-list"></ul>
-      </section>
-      <section id="chatbot" class="panel">
-        <h2>Chat Assistant</h2>
-        <div id="chat-container"></div>
-        <form id="chat-form">
-          <input type="text" id="chat-input" placeholder="Ask a question..." />
-          <button type="submit">Send</button>
-        </form>
-      </section>
-      <section id="apps" class="panel">
-        <h2>Integrated Apps</h2>
-        <div id="apps-grid" class="app-grid"></div>
-      </section>
-    </main>
-    <script src="app.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scale 2.0</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body class="theme-dark">
+  <aside class="sidebar"> … sidebar layout … </aside>
+  <div class="shell"> … topbar and grid layout … </div>
+  <script src="app.js"></script>
+</body>
 </html>
