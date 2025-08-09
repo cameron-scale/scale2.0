@@ -1,14 +1,32 @@
-document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize connection statuses and populate UI
-  await initializeConnections();
-  populateApps();
-  refreshMetrics();
-  loadEmails();
-  wireChat();
-  renderCharts();
-  buildLinkList();
-  showLinkModal();
-});
+// Kick off initialization once the DOM is ready.
+// If the script loads before DOMContentLoaded, the listener will fire.  If
+// the DOM has already loaded (because the script is at the bottom of the
+// document), we also invoke initialization immediately.  This ensures
+// initialization runs exactly once no matter when the script executes.
+async function initDashboard() {
+  try {
+    await initializeConnections();
+    populateApps();
+    refreshMetrics();
+    loadEmails();
+    wireChat();
+    renderCharts();
+    buildLinkList();
+    showLinkModal();
+  } catch (err) {
+    console.error('Dashboard initialization failed', err);
+  }
+}
+
+// Initialize when DOMContentLoaded fires
+document.addEventListener('DOMContentLoaded', initDashboard);
+
+// Also initialize immediately if the DOM is already parsed (when this
+// script is loaded at the end of the body, DOMContentLoaded may have
+// already fired)
+if (document.readyState !== 'loading') {
+  initDashboard();
+}
 
 // Service definitions and connection state
 const services = [
