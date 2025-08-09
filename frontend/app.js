@@ -51,7 +51,8 @@ function wireChat(){
     try{
       const ctx = METRICS;
       const res = await fetch('/api/chat', {
-        method:'POST', headers:{'Content-Type':'application/json'},
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ message:text, context:ctx })
       });
       const data = await res.json();
@@ -89,7 +90,7 @@ function renderCharts(){
         pointRadius:0
       }]
     },
-    options:{ plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.06)'}}}}
+    options:{ plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}}, y:{grid:{color:'rgba(255,255,255,0.06)'}}}}
   });
 
   new Chart(ctx2, {
@@ -106,7 +107,12 @@ function renderCharts(){
     type:'bar',
     data:{ labels:['Organic','Paid','Email','Referral','Direct'],
       datasets:[{ label:'Sessions', data:fakeSeries(5, 100, 300), backgroundColor:[
-        'rgba(103,210,255,0.7)','rgba(154,230,180,0.7)','rgba(255,214,102,0.7)','rgba(189,178,255,0.7)','rgba(255,164,164,0.7)']}]},
+        'rgba(103,210,255,0.7)',
+        'rgba(154,230,180,0.7)',
+        'rgba(255,214,102,0.7)',
+        'rgba(189,178,255,0.7)',
+        'rgba(255,164,164,0.7)'
+      ]}]},
     options:{ plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}}, y:{grid:{color:'rgba(255,255,255,0.06)'}}}}
   });
 }
@@ -115,6 +121,25 @@ function renderCharts(){
 function setText(id, value){ const el=document.getElementById(id); if(el) el.textContent=value; }
 function money(v){ return `$${Number(v||0).toLocaleString(undefined,{minimumFractionDigits:0})}`; }
 function pctDelta(a,b){ if(!b) return 0; return Math.round(((a-b)/b)*100); }
-function monthLabels(n){ const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const d=new Date(); const out=[]; for(let i=n-1;i>=0;i--){ const x=new Date(d.getFullYear(), d.getMonth()-i, 1); out.push(m[x.getMonth()]); } return out; }
-function fakeSeries(n, min, max){ return Array.from({length:n},()=>Math.floor(min + Math.random()*(max-min))); }
-function escapeHTML(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
+function monthLabels(n){
+  const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const d=new Date();
+  const out=[];
+  for(let i=n-1;i>=0;i--){
+    const x=new Date(d.getFullYear(), d.getMonth()-i, 1);
+    out.push(m[x.getMonth()]);
+  }
+  return out;
+}
+function fakeSeries(n, min, max){
+  return Array.from({length:n},()=>Math.floor(min + Math.random()*(max-min)));
+}
+function escapeHTML(s){
+  return (s||'').replace(/[&<>"']/g, c => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#039;'
+  })[c]);
+}
