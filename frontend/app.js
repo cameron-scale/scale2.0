@@ -103,9 +103,19 @@ function updateConnectButton(btn) {
 
 async function connectService(slug) {
   try {
+    // Call the backend to initiate the connection. Many integrations will return an
+    // authorization URL. If a URL is provided, redirect the user to complete the
+    // OAuth flow. Otherwise, update the connection state based on the response.
     const res = await fetch(`/api/${slug}/connect`, { method: 'POST' });
     const data = await res.json();
-    connections[slug] = !!data.connected;
+    if (data && data.url) {
+      // Redirect the browser to the provider's authorization page. The backend
+      // should set up a callback that redirects back to our dashboard once
+      // authorization is complete.
+      window.location.href = data.url;
+    } else {
+      connections[slug] = !!data.connected;
+    }
   } catch (err) {
     console.error('Connect error', err);
   }
