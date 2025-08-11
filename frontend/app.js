@@ -260,19 +260,76 @@ document.addEventListener('click', function(event) {
 
 /* Fetch metrics and update KPI cards */
 async function refreshMetrics() {
-  try {
-    const res = await fetch('/api/dashboard/metrics');
-    const data = await res.json();
-    document.getElementById('revenueThisMonth').textContent = money(data.revenueThisMonth);
-    document.getElementById('revenueLastMonth').textContent = money(data.revenueLastMonth);
-    document.getElementById('totalRevenue').textContent = money(data.totalRevenue);
-    document.getElementById('unpaidBills').textContent = data.unpaidBills;
-    document.getElementById('totalClients').textContent = data.totalClients;
-    document.getElementById('activeLeads').textContent = data.activeLeads;
-  } catch (err) {
-    console.error('Metrics error', err);
-  }
-}
+        try {
+         // Initialize metric variables. We'll attempt to fetch real data from
+         // connected services. If nothing is connected or a call fails, we
+         // fall back to zero values.
+         let revenueThisMonth = 0;
+         let revenueLastMonth = 0;
+         let totalRevenue = 0;
+         let unpaidBills = 0;
+         let totalClients = 0;
+         let activeLeads = 0;
+
+         // If QuickBooks is connected, fetch accounts and customers to
+         // populate revenue and client counts.
+         if (connections.quickbooks) {
+           try {
+             const accRes = await fetch('/api/quickbooks/accounts');
+             if (accRes.ok) {
+               const accData = await accRes.json();
+               // The QuickBooks API may return data under different keys depending on whether
+               // we're hitting the sandbox API or our stub. Normalize to an array.
+               const list = accData.Account || accData.accounts || [];
+               list.forEach(acc => {
+                 const bal = parseFloat(acc.Balance || acc.balance || 0);
+                 if (!isNaN(bal)) {
+                   totalRevenue += bal;
+                 }
+               });
+               revenueThisMonth = totalRevenue;
+               revenueLastMonth = 0;
+             }
+             const custRes = await fetch('/api/quickbooks/customers');
+             if (custRes.ok) {
+               const custData = await custRes.json();
+               const custList = custData.Customer || custData.customers || [];
+               totalClients = custList.length;
+             }
+           } catch (err) {
+             console.warn('QuickBooks metric fetch failed', err);
+           }
+         }
+
+         // If Zoom is connected, count upcoming meetings as active leads.
+         if (connections.zoom) {
+           try {
+             const meetRes = await fetch('/api/zoom/meetings');
+             if (meetRes.ok) {
+               const meets = await meetRes.json();
+               // The Zoom API returns an array of meetings or an object with meetings property.
+               if (Array.isArray(meets)) {
+                 activeLeads += meets.length;
+               } else if (Array.isArray(meets.meetings)) {
+                 activeLeads += meets.meetings.length;
+               }
+             }
+           } catch (err) {
+             console.warn('Zoom meeting fetch failed', err);
+           }
+         }
+
+         // Update the DOM with our computed metrics. Use fallback to 0 if NaN.
+         document.getElementById('revenueThisMonth').textContent = money(revenueThisMonth);
+         document.getElementById('revenueLastMonth').textContent = money(revenueLastMonth);
+         document.getElementById('totalRevenue').textContent = money(totalRevenue);
+         document.getElementById('unpaidBills').textContent = unpaidBills;
+         document.getElementById('totalClients').textContent = totalClients;
+         document.getElementById('activeLeads').textContent = activeLeads;
+       } catch (err) {
+         console.error('Metrics error', err);
+       }
+     }
 
 /* Fetch recent emails */
 async function loadEmails() {
@@ -330,19 +387,41 @@ function appendChat(role, text) {
 /* Render three charts with Chart.js */
 function renderCharts() {
   // Revenue Trend
-  new Chart(document.getElementById('chartRevenue'), {
-    type:'line',
-    data:{
-      labels: monthLabels(12),
-      datasets:[
-        { label:'Revenue', data: fakeSeries(12, 8000, 20000), fill:true,
-          backgroundColor:'rgba(103,210,255,0.2)', borderColor:'rgba(103,210,255,1)', tension:.3 },
-        { label:'Cost', data: fakeSeries(12, 3000, 8000), fill:true,
-          backgroundColor:'rgba(154,230,180,0.2)', borderColor:'rgba(154,230,180,1)', tension:.3 }
-      ]
-    },
-    options:{ plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}}, y:{grid:{color:'rgba(255,255,255,0.08)'}}}}
-  });
+  (async () => {
+    // Default to random data. If QuickBooks is connected, compute a simple
+    // revenue series by distributing the total account balance over 12 months.
+    let revenueData = fakeSeries(12, 8000, 20000);
+    if (connections.quickbooks) {
+      try {
+        const res = await fetch('/api/quickbooks/accounts');
+        if (res.ok) {
+          const data = await res.json();
+          const list = data.Account || data.accounts || [];
+          let total = 0;
+          list.forEach(acc => {
+            const bal = parseFloat(acc.Balance || acc.balance || 0);
+            if (!isNaN(bal)) total += bal;
+          });
+          revenueData = Array.from({ length: 12 }, () => total / 12);
+        }
+      } catch (err) {
+        console.warn('Revenue chart data fetch failed', err);
+      }
+    }
+    new Chart(document.getElementById('chartRevenue'), {
+      type:'line',
+      data:{
+        labels: monthLabels(12),
+        datasets:[
+          { label:'Revenue', data: revenueData, fill:true,
+            backgroundColor:'rgba(103,210,255,0.2)', borderColor:'rgba(103,210,255,1)', tension:.3 },
+          { label:'Cost', data: fakeSeries(12, 3000, 8000), fill:true,
+            backgroundColor:'rgba(154,230,180,0.2)', borderColor:'rgba(154,230,180,1)', tension:.3 }
+        ]
+      },
+      options:{ plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}}, y:{grid:{color:'rgba(255,255,255,0.08)'}}}}
+    });
+  })();
   // Leads & Conversions
   new Chart(document.getElementById('chartLeads'), {
     type:'bar',
