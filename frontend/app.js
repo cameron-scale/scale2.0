@@ -1,8 +1,7 @@
 // Kick off initialization once the DOM is ready.
-// If the script loads before DOMContentLoaded, the listener will fire.  If
-// the DOM has already loaded (because the script is at the bottom of the
-// document), we also invoke initialization immediately.  This ensures
-// initialization runs exactly once no matter when the script executes.
+// The dashboard now requires authentication before it is shown. We first
+// display a login/signup overlay. After the user logs in or completes
+// the signup conversation, we call initDashboard().
 async function initDashboard() {
   try {
     await initializeConnections();
@@ -12,20 +11,213 @@ async function initDashboard() {
     wireChat();
     renderCharts();
     buildLinkList();
+    // Show the link modal after initialization so the user can connect services
     showLinkModal();
   } catch (err) {
     console.error('Dashboard initialization failed', err);
   }
 }
 
-// Initialize when DOMContentLoaded fires
-document.addEventListener('DOMContentLoaded', initDashboard);
+// Initialize authentication flow when DOM is ready. If the user is not logged
+// in, show the authentication overlay; otherwise go straight to the dashboard.
+async function initAuth() {
+  if (!localStorage.getItem('loggedIn')) {
+    const overlay = document.getElementById('auth-overlay');
+    if (overlay) overlay.style.display = 'flex';
+    setupAuth();
+  } else {
+    // Already logged in
+    hideAuthOverlay();
+    await initDashboard();
+  }
+}
 
-// Also initialize immediately if the DOM is already parsed (when this
-// script is loaded at the end of the body, DOMContentLoaded may have
-// already fired)
+document.addEventListener('DOMContentLoaded', initAuth);
 if (document.readyState !== 'loading') {
-  initDashboard();
+  initAuth();
+}
+
+// Set up handlers for login and signup buttons
+function setupAuth() {
+  const loginBtn = document.getElementById('login-button');
+  const signupBtn = document.getElementById('signup-button');
+  const loginForm = document.getElementById('login-form');
+  const loginContainer = document.getElementById('login-container');
+  const signupContainer = document.getElementById('signup-container');
+  if (loginBtn) {
+    loginBtn.onclick = () => {
+      if (loginForm) loginForm.style.display = 'block';
+      if (signupContainer) signupContainer.style.display = 'none';
+    };
+  }
+  if (signupBtn) {
+    signupBtn.onclick = () => {
+      if (loginForm) loginForm.style.display = 'none';
+      if (loginContainer) loginContainer.style.display = 'none';
+      if (signupContainer) signupContainer.style.display = 'block';
+      startSignup();
+    };
+  }
+  const loginSubmit = document.getElementById('login-submit');
+  if (loginSubmit) {
+    loginSubmit.onclick = () => {
+      // In this prototype we do not validate credentials.  Simply store a flag
+      // and proceed to dashboard.
+      localStorage.setItem('loggedIn', 'true');
+      hideAuthOverlay();
+      initDashboard();
+    };
+  }
+}
+
+// Signup conversation logic
+let signupStep = 0;
+let signupAnswers = {};
+const signupQuestions = [
+  { text: "What is your business type?", key: "businessType" },
+  { text: "Briefly describe your business.", key: "businessDescription" },
+  { text: "Select the services you need to connect:", key: "services", type: "multi" }
+];
+
+function startSignup() {
+  signupStep = 0;
+  signupAnswers = {};
+  // Clear chat box
+  const chatBox = document.getElementById('chat-box');
+  if (chatBox) chatBox.innerHTML = '';
+  showNextSignupQuestion();
+}
+
+function showNextSignupQuestion() {
+  const chatBox = document.getElementById('chat-box');
+  const signupInput = document.getElementById('signup-input');
+  const selectServices = document.getElementById('select-services');
+  if (!chatBox) return;
+  const current = signupQuestions[signupStep];
+  if (!current) {
+    // Completed all questions
+    handleSelectedServices();
+    return;
+  }
+  // Display AI question
+  const aiMsg = document.createElement('div');
+  aiMsg.className = 'chat-message ai';
+  aiMsg.textContent = current.text;
+  chatBox.appendChild(aiMsg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  // Multi-select question
+  if (current.type === 'multi') {
+    if (signupInput) signupInput.style.display = 'none';
+    if (selectServices) selectServices.style.display = 'block';
+    const container = document.getElementById('service-options');
+    if (container) {
+      container.innerHTML = '';
+      services.forEach(svc => {
+        const div = document.createElement('div');
+        const chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.value = svc.slug;
+        chk.id = `svc-${svc.slug}`;
+        const label = document.createElement('label');
+        label.textContent = svc.name;
+        label.htmlFor = chk.id;
+        div.appendChild(chk);
+        div.appendChild(label);
+        container.appendChild(div);
+      });
+    }
+    const servicesSubmit = document.getElementById('services-submit');
+    if (servicesSubmit) {
+      servicesSubmit.onclick = () => {
+        const selected = [];
+        if (container) {
+          container.querySelectorAll('input[type="checkbox"]').forEach(input => {
+            if (input.checked) selected.push(input.value);
+          });
+        }
+        signupAnswers[current.key] = selected;
+        signupStep++;
+        if (selectServices) selectServices.style.display = 'none';
+        showNextSignupQuestion();
+      };
+    }
+  } else {
+    // Text answer question
+    if (signupInput) signupInput.style.display = 'block';
+    if (selectServices) selectServices.style.display = 'none';
+    const answerInput = document.getElementById('signup-answer');
+    const answerButton = document.getElementById('signup-submit');
+    if (answerInput) answerInput.value = '';
+    if (answerButton) {
+      answerButton.onclick = () => {
+        const val = answerInput.value.trim();
+        if (!val) return;
+        // Display user message
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-message user';
+        userMsg.textContent = val;
+        chatBox.appendChild(userMsg);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        signupAnswers[current.key] = val;
+        signupStep++;
+        showNextSignupQuestion();
+      };
+    }
+  }
+}
+
+function handleSelectedServices() {
+  const chatBox = document.getElementById('chat-box');
+  if (chatBox) {
+    const doneMsg = document.createElement('div');
+    doneMsg.className = 'chat-message ai';
+    doneMsg.textContent = "Great! We'll connect your services and build your website.";
+    chatBox.appendChild(doneMsg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+  const selected = signupAnswers.services || [];
+  // Sequentially connect services. We ignore errors and placeholders.
+  (async () => {
+    for (const slug of selected) {
+      try {
+        await connectService(slug);
+      } catch (e) {
+        console.warn('Service connection failed for', slug);
+      }
+    }
+    // Show Duda placeholder message
+    const dudaMsg = document.getElementById('duda-message');
+    const signupInput = document.getElementById('signup-input');
+    const selectServices = document.getElementById('select-services');
+    if (signupInput) signupInput.style.display = 'none';
+    if (selectServices) selectServices.style.display = 'none';
+    if (dudaMsg) dudaMsg.style.display = 'block';
+    const finishBtn = document.getElementById('duda-done');
+    if (finishBtn) {
+      finishBtn.onclick = () => {
+        localStorage.setItem('loggedIn', 'true');
+        hideAuthOverlay();
+        initDashboard();
+        showTutorial();
+      };
+    }
+  })();
+}
+
+function hideAuthOverlay() {
+  const overlay = document.getElementById('auth-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+function showTutorial() {
+  const overlay = document.getElementById('tutorial-overlay');
+  if (overlay) overlay.style.display = 'flex';
+  const closeBtn = document.getElementById('tutorial-close');
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      overlay.style.display = 'none';
+    };
+  }
 }
 
 // Service definitions and connection state
