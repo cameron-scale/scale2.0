@@ -106,6 +106,55 @@
     </div>
   </div>
 
+      <!-- Authentication Overlay (login/signup) -->
+      <div id="auth-overlay" class="auth-overlay" style="display:none;">
+        <div id="login-container">
+          <h2>Welcome to Scale 2.0</h2>
+          <p>Please sign in or sign up to continue.</p>
+          <div class="login-buttons">
+            <button id="login-button">Log In</button>
+            <button id="signup-button">Sign Up</button>
+          </div>
+          <div id="login-form" style="display:none;">
+            <input type="email" id="login-email" placeholder="Email">
+            <input type="password" id="login-password" placeholder="Password">
+            <button id="login-submit">Log In</button>
+          </div>
+        </div>
+        <div id="signup-container" style="display:none;">
+          <div id="chat-box" class="chat-box"></div>
+          <div id="signup-input" style="display:none;">
+            <input id="signup-answer" type="text" placeholder="Type your answer...">
+            <button id="signup-submit">Send</button>
+          </div>
+          <div id="select-services" style="display:none;">
+            <h3>Select services to connect:</h3>
+            <div id="service-options"></div>
+            <button id="services-submit">Continue</button>
+          </div>
+          <div id="duda-message" style="display:none;">
+            <p>Your website is being built using AI and Duda... (placeholder)</p>
+            <button id="duda-done">Finish</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tutorial Overlay -->
+      <div id="tutorial-overlay" class="tutorial-overlay" style="display:none;">
+        <div id="tutorial-content">
+          <h2>Welcome to Scale 2.0</h2>
+          <p>Here are some tips to get you started:</p>
+          <ul>
+            <li>The KPI cards at the top show your key metrics like revenue, clients and leads.</li>
+            <li>The charts visualize your revenue trends, leads and conversions, and channel performance.</li>
+            <li>The Recent Emails section highlights your latest important messages.</li>
+            <li>The Chat Assistant can answer questions about your business operations.</li>
+            <li>The Integrated Apps grid lets you open and manage each connected service.</li>
+          </ul>
+          <button id="tutorial-close">Got it!</button>
+        </div>
+      </div>
+
   <script src="app.js"></script>
 </body>
 </html>
