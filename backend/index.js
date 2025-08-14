@@ -44,6 +44,7 @@ const assistantRouter = require('./integrations/assistant');
 // New SMS Marketing integration
 // Postscript SMS marketing integration
 const postscriptRouter = require('./integrations/postscript');
+const dudaRouter = require('./integrations/duda');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -146,7 +147,8 @@ app.post('/api/chat', async (req, res) => {
   }
   try {
     const systemPrompt =
-      'You are Selene, an intelligent AI concierge for business owners. You have access to a variety of data sources—including QuickBooks, Outlook, Salesforce, Zoom, calendars, analytics, and an SMS marketing service—and can use them to answer questions. ' +
+      'You are Selene, an intelligent AI concierge for business owners. You have access to a variety of data sources—including QuickBooks, Outlook, Salesforce, Zoom, calendars, analytics, an SMS marketing service, and a website builder—and can use them to answer questions. ' +
+      'You can also build beautiful websites through Duda and coordinate with a designated project manager for any edits or customizations. ' +
       'Speak in a natural, friendly, and slightly seductive tone while remaining professional. When relevant, enrich your answers with diagrams, charts or images to help illustrate concepts. ' +
       'Use any context data provided to you (metrics, messages, account details) to craft helpful responses. If specific information is unavailable, politely let the user know.';
     const messages = [
@@ -192,6 +194,7 @@ app.use('/api/zoom', zoomRouter);
 app.use('/api/calendly', calendlyRouter);
 app.use('/api/assistant', assistantRouter);
 app.use('/api/postscript', postscriptRouter);
+app.use('/api/duda', dudaRouter);
 
 // Catch-all route: serve index.html for non-API requests
 app.get('*', (req, res) => {
