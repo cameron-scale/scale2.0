@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scale 2.0 Dashboard</title>
+  <title>Scale 2.0 – Selene</title>
   <link rel="stylesheet" href="style.css">
   <!-- Chart.js for the three charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -11,89 +11,16 @@
 <body>
   <!-- Page content -->
   <div class="shell">
-    <header class="topbar">
-      <input class="search" placeholder="Search…" />
-      <div class="actions"><span></span><span></span></div>
-    </header>
-
     <main class="grid">
-      <!-- KPI row -->
-      <section class="card kpis">
-        <div class="kpi">
-          <div class="kpi-label">Revenue (MTD)</div>
-          <div class="kpi-value" id="revenueThisMonth">$0</div>
-          <div class="kpi-sub">vs last month</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">Revenue (Last Month)</div>
-          <div class="kpi-value" id="revenueLastMonth">$0</div>
-          <div class="kpi-sub">vs prior</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">Total Revenue</div>
-          <div class="kpi-value" id="totalRevenue">$0</div>
-          <div class="kpi-sub">since inception</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">Unpaid Bills</div>
-          <div class="kpi-value" id="unpaidBills">0</div>
-          <div class="kpi-sub">due this month</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">Total Clients</div>
-          <div class="kpi-value" id="totalClients">0</div>
-          <div class="kpi-sub"></div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">Active Leads</div>
-          <div class="kpi-value" id="activeLeads">0</div>
-          <div class="kpi-sub"></div>
-        </div>
-      </section>
-
-      <!-- Charts -->
-      <section class="card chart">
-        <div class="card-title">Revenue Trend</div>
-        <canvas id="chartRevenue"></canvas>
-      </section>
-      <section class="card chart">
-        <div class="card-title">Leads & Conversions</div>
-        <canvas id="chartLeads"></canvas>
-      </section>
-      <section class="card chart">
-        <div class="card-title">Channel Performance</div>
-        <canvas id="chartChannels"></canvas>
-      </section>
-
-      <!-- Recent Emails -->
-      <section class="card list">
-        <div class="card-title">Recent Emails</div>
-        <ul id="email-list"></ul>
-      </section>
-
-      <!-- Chat Assistant -->
-      <section class="card chat">
-        <div class="card-title">Chat Assistant</div>
+      <!-- Chat interface for Selene -->
+      <section class="card chat full-chat">
+        <div class="card-title">Selene</div>
         <div id="chat-container" class="chat-scroll"></div>
         <form id="chat-form" class="chat-form">
-          <input type="text" id="chat-input" placeholder="Ask a question…" />
+          <input type="text" id="chat-input" placeholder="Ask me anything about your business…" />
           <button type="submit">Send</button>
         </form>
       </section>
-
-      <!-- Integrated Apps -->
-      <section class="card apps">
-        <div class="card-title">Integrated Apps</div>
-        <div id="apps-grid" class="app-grid"></div>
-      </section>
-
-      <!-- Integration Details -->
-      <section id="integration-details" class="card" style="display:none;">
-        <div class="card-title" id="integration-title"></div>
-        <div id="integration-content"></div>
-        <button id="back-to-dashboard" class="back-button">Back to Dashboard</button>
-      </section>
-
     </main>
   </div>
 
@@ -142,14 +69,13 @@
       <!-- Tutorial Overlay -->
       <div id="tutorial-overlay" class="tutorial-overlay" style="display:none;">
         <div id="tutorial-content">
-          <h2>Welcome to Scale 2.0</h2>
+          <h2>Welcome to Selene</h2>
           <p>Here are some tips to get you started:</p>
           <ul>
-            <li>The KPI cards at the top show your key metrics like revenue, clients and leads.</li>
-            <li>The charts visualize your revenue trends, leads and conversions, and channel performance.</li>
-            <li>The Recent Emails section highlights your latest important messages.</li>
-            <li>The Chat Assistant can answer questions about your business operations.</li>
-            <li>The Integrated Apps grid lets you open and manage each connected service.</li>
+            <li>This is a conversational interface. Ask Selene anything about your business—from finances to customer communications.</li>
+            <li>Selene has access to your connected services (QuickBooks, Outlook, Salesforce, and more). Connect them via the integrations menu to unlock richer insights.</li>
+            <li>Selene can generate diagrams and charts when helpful. Simply ask for a chart or diagram and she’ll include it in her response.</li>
+            <li>You can send marketing messages using the SMS integration once it’s connected.</li>
           </ul>
           <button id="tutorial-close">Got it!</button>
         </div>
