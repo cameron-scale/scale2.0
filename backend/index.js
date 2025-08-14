@@ -41,6 +41,10 @@ const zoomRouter = require('./integrations/zoom');
 const calendlyRouter = require('./integrations/calendly');
 const assistantRouter = require('./integrations/assistant');
 
+// New SMS Marketing integration
+// Postscript SMS marketing integration
+const postscriptRouter = require('./integrations/postscript');
+
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -142,7 +146,9 @@ app.post('/api/chat', async (req, res) => {
   }
   try {
     const systemPrompt =
-      'You are an AI assistant integrated into a business dashboard. When asked questions, provide concise answers based on the available metrics and data. If information is unavailable, say so.';
+      'You are Selene, an intelligent AI concierge for business owners. You have access to a variety of data sources—including QuickBooks, Outlook, Salesforce, Zoom, calendars, analytics, and an SMS marketing service—and can use them to answer questions. ' +
+      'Speak in a natural, friendly, and slightly seductive tone while remaining professional. When relevant, enrich your answers with diagrams, charts or images to help illustrate concepts. ' +
+      'Use any context data provided to you (metrics, messages, account details) to craft helpful responses. If specific information is unavailable, politely let the user know.';
     const messages = [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: message + (context ? `\n\nContext: ${JSON.stringify(context)}` : '') },
@@ -185,6 +191,7 @@ app.use('/api/googlecalendar', googlecalendarRouter);
 app.use('/api/zoom', zoomRouter);
 app.use('/api/calendly', calendlyRouter);
 app.use('/api/assistant', assistantRouter);
+app.use('/api/postscript', postscriptRouter);
 
 // Catch-all route: serve index.html for non-API requests
 app.get('*', (req, res) => {
