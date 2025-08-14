@@ -178,6 +178,9 @@ function handleSelectedServices() {
   const selected = signupAnswers.services || [];
   // Sequentially connect services. We ignore errors and placeholders.
   (async () => {
+    // Connect each selected service in sequence. If a service fails to
+    // connect (e.g., OAuth not implemented), we ignore the error but
+    // continue connecting the rest.
     for (const slug of selected) {
       try {
         await connectService(slug);
@@ -185,7 +188,14 @@ function handleSelectedServices() {
         console.warn('Service connection failed for', slug);
       }
     }
-    // Show Duda placeholder message
+    // If Duda was selected, kick off website generation using the
+    // business info provided in signupAnswers. This calls our backend
+    // /api/duda/build endpoint. We only attempt this if the user chose
+    // Duda and the integration is connected. Any errors are ignored.
+    if (selected.includes('duda')) {
+      buildDudaWebsite();
+    }
+    // Hide signup controls and reveal the final Duda message (if present).
     const dudaMsg = document.getElementById('duda-message');
     const signupInput = document.getElementById('signup-input');
     const selectServices = document.getElementById('select-services');
@@ -202,6 +212,34 @@ function handleSelectedServices() {
       };
     }
   })();
+}
+
+// Kick off Duda website generation using the information collected during
+// signup. We call the backend /api/duda/build endpoint with the
+// business name (using the business type as a proxy) and description.
+async function buildDudaWebsite() {
+  const chatBox = document.getElementById('chat-box');
+  // Extract the business name and description from the signup answers.
+  const businessName = signupAnswers.businessType || 'your business';
+  const description = signupAnswers.businessDescription || '';
+  try {
+    const res = await fetch('/api/duda/build', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ businessName, description })
+    });
+    const data = await res.json();
+    // Display the message from the backend in the signup chat.
+    if (chatBox) {
+      const aiMsg = document.createElement('div');
+      aiMsg.className = 'chat-message ai';
+      aiMsg.textContent = data.message || 'We’re creating your website now.';
+      chatBox.appendChild(aiMsg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  } catch (err) {
+    console.warn('Duda website build failed', err);
+  }
 }
 
 function hideAuthOverlay() {
@@ -239,6 +277,7 @@ const services = [
   { name: 'Zoom', slug: 'zoom' },
   { name: 'Calendly', slug: 'calendly' }
   , { name: 'Postscript', slug: 'postscript' }
+  , { name: 'Duda', slug: 'duda' }
 ];
 const connections = {};
 
@@ -415,6 +454,7 @@ function openIntegration(slug) {
     calendly: ['events'],
     assistant: [],
     postscript: ['messages'],
+    duda: [],
   };
   const endpoints = endpointsMap[slug] || [];
   if (endpoints.length === 0) {
