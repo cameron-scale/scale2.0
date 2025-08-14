@@ -4,14 +4,14 @@
 // the signup conversation, we call initDashboard().
 async function initDashboard() {
   try {
+    // Initialize connections and the link list. We do not render metrics,
+    // charts or email lists in the simplified interface; instead we focus
+    // solely on the chat experience. Users can still connect services via
+    // the integration modal.
     await initializeConnections();
-    populateApps();
-    refreshMetrics();
-    loadEmails();
-    wireChat();
-    renderCharts();
     buildLinkList();
-    // Show the link modal after initialization so the user can connect services
+    wireChat();
+    // Present the link modal on first load so users can connect services.
     showLinkModal();
   } catch (err) {
     console.error('Dashboard initialization failed', err);
@@ -238,6 +238,7 @@ const services = [
   { name: 'ChatGPT', slug: 'assistant' },
   { name: 'Zoom', slug: 'zoom' },
   { name: 'Calendly', slug: 'calendly' }
+  , { name: 'Postscript', slug: 'postscript' }
 ];
 const connections = {};
 
@@ -413,6 +414,7 @@ function openIntegration(slug) {
     zoom: ['meetings'],
     calendly: ['events'],
     assistant: [],
+    postscript: ['messages'],
   };
   const endpoints = endpointsMap[slug] || [];
   if (endpoints.length === 0) {
