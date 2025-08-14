@@ -49,6 +49,8 @@ const dudaRouter = require('./integrations/duda');
 // Additional integrations: Slack for team chat and Asana for project management
 const slackRouter = require('./integrations/slack');
 const asanaRouter = require('./integrations/asana');
+// Scale MBS Bot integration
+const scaleMbsBotRouter = require('./integrations/scaleMbsBot');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -153,7 +155,7 @@ app.post('/api/chat', async (req, res) => {
     const systemPrompt =
       'You are Selene, an intelligent AI concierge for business owners. You have access to a variety of data sources—including QuickBooks, Outlook, Salesforce, Zoom, calendars, analytics, an SMS marketing service, and a website builder—and can use them to answer questions. ' +
       'You can also build beautiful websites through Duda and coordinate with a designated project manager for any edits or customizations. ' +
-      'You can interact with team chat channels via Slack and manage projects with Asana to streamline collaboration. ' +
+           'You can interact with team chat channels via Slack, manage projects with Asana, and chat with your internal Scale MBS bot for additional automation. ' +
       'Speak in a natural, friendly, and slightly seductive tone while remaining professional. When relevant, enrich your answers with diagrams, charts or images to help illustrate concepts. ' +
       'Use any context data provided to you (metrics, messages, account details) to craft helpful responses. If specific information is unavailable, politely let the user know.';
     const messages = [
@@ -203,7 +205,14 @@ app.use('/api/duda', dudaRouter);
 
 // Mount Slack and Asana integrations
 app.use('/api/slack', slackRouter);
-app.use('/api/asana', asanaRouter);
+    app.use('/api/asana', asanaRouter);
+    // Mount Scale MBS Bot integration
+
+// Mount Scale MBS Bot integration. This allows the frontend to check
+// connection status, connect, disconnect, and send/receive messages. Replace
+// the stub with real API calls once the external API documentation is
+// available and the secret keys are set in the environment variables.
+app.use('/api/scalembsbot', scaleMbsBotRouter);
 
 // Catch-all route: serve index.html for non-API requests
 app.get('*', (req, res) => {
