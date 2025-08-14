@@ -280,6 +280,7 @@ const services = [
   , { name: 'Duda', slug: 'duda' }
   , { name: 'Slack', slug: 'slack' }
   , { name: 'Asana', slug: 'asana' }
+  , { name: 'Scale MBS Bot', slug: 'scalembsbot' }
 ];
 const connections = {};
 
@@ -459,6 +460,7 @@ function openIntegration(slug) {
     duda: [],
     slack: ['channels','messages'],
     asana: ['projects','tasks'],
+    scalembsbot: ['messages'],
   };
   const endpoints = endpointsMap[slug] || [];
   if (endpoints.length === 0) {
