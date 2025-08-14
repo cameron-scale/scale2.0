@@ -278,6 +278,8 @@ const services = [
   { name: 'Calendly', slug: 'calendly' }
   , { name: 'Postscript', slug: 'postscript' }
   , { name: 'Duda', slug: 'duda' }
+  , { name: 'Slack', slug: 'slack' }
+  , { name: 'Asana', slug: 'asana' }
 ];
 const connections = {};
 
@@ -455,6 +457,8 @@ function openIntegration(slug) {
     assistant: [],
     postscript: ['messages'],
     duda: [],
+    slack: ['channels','messages'],
+    asana: ['projects','tasks'],
   };
   const endpoints = endpointsMap[slug] || [];
   if (endpoints.length === 0) {
