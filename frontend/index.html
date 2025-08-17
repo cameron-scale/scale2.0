@@ -11,18 +11,46 @@
 <body>
   <!-- Page content -->
   <div class="shell">
-    <main class="grid">
-      <!-- Chat interface for Selene -->
-      <section class="card chat full-chat">
-        <div class="card-title">Selene</div>
-        <div id="chat-container" class="chat-scroll"></div>
-        <form id="chat-form" class="chat-form">
-          <input type="text" id="chat-input" placeholder="Ask me anything about your business…" />
-          <button type="submit">Send</button>
-        </form>
-      </section>
-    </main>
-  </div>
+       <main class="app-shell">
+    <!-- Left rail -->
+    <aside class="rail glass">
+      <div class="rail-logo">S</div>
+      <nav class="rail-nav">
+        <button class="rail-btn active" title="Chat"><span>💬</span></button>
+        <button class="rail-btn" id="rail-integrations" title="Integrations">⚙️</button>
+        <button class="rail-btn" id="rail-sms" title="SMS">📲</button>
+        <button class="rail-btn" id="rail-website" title="Website">🌐</button>
+        <button class="rail-btn" id="rail-analytics" title="Analytics">📈</button>
+      </nav>
+      <div class="rail-user">•</div>
+    </aside>
+
+    <!-- Middle: conversations -->
+    <section class="convos glass">
+      <div class="convos-search">
+        <input id="convo-search" placeholder="Search…" />
+      </div>
+      <ul id="convo-list" class="convo-list">
+        <!-- populated by JS -->
+      </ul>
+    </section>
+
+    <!-- Right: chat -->
+    <section class="chat-pane glass">
+      <header class="chat-header">
+        <div class="chat-title">Selene</div>
+        <div class="chat-actions">
+          <button id="tour-btn">?</button>
+        </div>
+      </header>
+      <div id="chat-container" class="chat-scroll"></div>
+      <form id="chat-form" class="chat-input">
+        <input type="text" id="chat-input" placeholder="Message Selene…" />
+        <button type="submit">Send</button>
+      </form>
+    </section>
+  </main>
+ 
 
   <!-- Account Linking Modal -->
   <div id="link-modal" class="modal" style="display:none;">
