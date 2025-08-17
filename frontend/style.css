@@ -331,3 +331,50 @@
   margin-top:20px;
   font-weight:600;
 }
+
+/* App grid */
+.app-shell{
+  display:grid;
+  grid-template-columns: 72px 340px 1fr;
+  gap:20px;
+  height:100vh;
+  padding:20px;
+}
+
+/* Glass cards reused */
+.glass{
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(14px);
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* Left rail */
+.rail{ display:flex; flex-direction:column; align-items:center; padding:12px 8px; }
+.rail-logo{ width:40px; height:40px; border-radius:12px; display:grid; place-items:center; font-weight:800;}
+.rail-nav{ display:flex; flex-direction:column; gap:12px; margin:20px 0; }
+.rail-btn{ width:48px; height:48px; border-radius:14px; border:1px solid rgba(255,255,255,0.18); background:rgba(255,255,255,0.06); cursor:pointer; }
+.rail-btn.active{ outline:2px solid rgba(21,197,255,0.7); }
+.rail-user{ margin-top:auto; width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,0.2); }
+
+/* Middle: conversations */
+.convos{ padding:14px; display:flex; flex-direction:column; }
+.convos-search input{ width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.16); background:rgba(255,255,255,0.06); color:#fff; }
+.convo-list{ list-style:none; margin:12px 0 0; padding:0; display:flex; flex-direction:column; gap:10px; }
+.convo-item{ padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.16); background:rgba(255,255,255,0.06); cursor:pointer; }
+.convo-item.active{ outline:2px solid rgba(21,197,255,0.6); }
+
+/* Right: chat */
+.chat-pane{ display:flex; flex-direction:column; padding:14px; }
+.chat-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.chat-scroll{ flex:1; overflow:auto; display:flex; flex-direction:column; gap:12px; padding:8px; }
+.chat-input{ display:flex; gap:10px; margin-top:8px; }
+.chat-input input{ flex:1; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.16); background:rgba(255,255,255,0.06); color:#fff; }
+.chat-input button{ padding:12px 16px; border-radius:12px; border:0; background:linear-gradient(135deg,#2b7cff,#15c5ff); color:#fff; font-weight:700; }
+
+/* Responsive */
+@media (max-width: 1100px){
+  .app-shell{ grid-template-columns: 60px 1fr; }
+  .convos{ display:none; }
+}
