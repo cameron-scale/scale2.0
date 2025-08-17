@@ -32,9 +32,48 @@ async function initAuth() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', initAuth);
+// After the DOM is ready, initialize authentication and layout.
+document.addEventListener('DOMContentLoaded', () => {
+  initAuth();
+  initLayout();
+});
+// Support cases where the DOM may already be ready before our listener is attached
 if (document.readyState !== 'loading') {
   initAuth();
+  initLayout();
+}
+
+/**
+ * Initialize the conversational layout and side-menu interactions.
+ * This function populates the conversation list with placeholders and
+ * attaches click handlers to side menu buttons for integrations and actions.
+ */
+function initLayout() {
+  const list = document.getElementById('convo-list');
+  // Populate the conversation list with some default threads if none exist
+  if (list && list.children.length === 0) {
+    const names = ['General', 'Finance', 'Sales', 'Marketing'];
+    names.forEach((name, i) => {
+      const li = document.createElement('li');
+      li.className = 'convo-item' + (i === 0 ? ' active' : '');
+      li.textContent = name;
+      li.onclick = () => {
+        Array.from(list.children).forEach(el => el.classList.remove('active'));
+        li.classList.add('active');
+      };
+      list.appendChild(li);
+    });
+  }
+  // Hook up side menu buttons
+  const btnIntegrations = document.getElementById('rail-integrations');
+  if (btnIntegrations) btnIntegrations.addEventListener('click', showLinkModal);
+  const btnWebsite = document.getElementById('rail-website');
+  if (btnWebsite) btnWebsite.addEventListener('click', buildDudaWebsite);
+  const btnSms = document.getElementById('rail-sms');
+  if (btnSms) btnSms.addEventListener('click', async () => {
+    await connectService('postscript');
+    openIntegration('postscript');
+  });
 }
 
 // Set up handlers for login and signup buttons
