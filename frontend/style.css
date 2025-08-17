@@ -344,7 +344,45 @@
 /* Glass cards reused */
 .glass{
   background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.18);
+  
+/* Overrides for larger icons and chat input */
+.rail-btn{
+  width:56px;
+  height:56px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+}
+
+.rail-user{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  margin-top:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.chat-input{
+  margin-top:auto;
+  gap:12px;
+}
+
+.chat-input input{
+  padding:16px 18px;
+  border-radius:16px;
+  font-size:16px;
+}
+
+.chat-input button{
+  padding:16px 20px;
+  border-radius:16px;
+  font-size:16px;
+}
+border:1px solid rgba(255,255,255,0.18);
   backdrop-filter: blur(14px);
   border-radius:16px;
   box-shadow:0 10px 30px rgba(0,0,0,0.35);
@@ -361,7 +399,45 @@
 /* Middle: conversations */
 .convos{ padding:14px; display:flex; flex-direction:column; }
 .convos-search input{ width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.16); background:rgba(255,255,255,0.06); color:#fff; }
-.convo-list{ list-style:none; margin:12px 0 0; padding:0; display:flex; flex-direction:column; gap:10px; }
+.conv
+/* Final overrides for larger icons and chat input */
+.rail-btn{
+  width:56px;
+  height:56px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+}
+
+.rail-user{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  margin-top:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.chat-input{
+  margin-top:auto;
+  gap:12px;
+}
+
+.chat-input input{
+  padding:16px 18px;
+  border-radius:16px;
+  font-size:16px;
+}
+
+.chat-input button{
+  padding:16px 20px;
+  border-radius:16px;
+  font-size:16px;
+}
+o-list{ list-style:none; margin:12px 0 0; padding:0; display:flex; flex-direction:column; gap:10px; }
 .convo-item{ padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.16); background:rgba(255,255,255,0.06); cursor:pointer; }
 .convo-item.active{ outline:2px solid rgba(21,197,255,0.6); }
 
