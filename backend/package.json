@@ -12,4 +12,8 @@
  
     "express": "^4.19.2"
   }
+  "dependencies": {
+  "openai": "^4.1.0",
+  …
+}
 }
