@@ -225,3 +225,5 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
   console.log(`Backend server listening on port ${port}`);
 });
+const openaiRouter = require('./integrations/openai');
+app.use('/api/openai', openaiRouter);
